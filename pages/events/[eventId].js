@@ -16,8 +16,6 @@ function EventDetailPage() {
     return <p>No Event Found!</p>;
   }
 
-  // date, address, image, imageAlt
-
   return (
     <Fragment>
       <EventSummary title={event.title} />
