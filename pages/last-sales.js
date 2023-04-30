@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
+const fetcher = (url) => fetch(url).then((r) => r.json());
+
 function LastSalesPage(props) {
-  const [sales, setSales] = useState();
+  const [sales, setSales] = useState(props.sales);
   // const [isLoading, setIsLoading] = useState(false);
-  const fetcher = (url) => fetch(url).then((r) => r.json());
 
   const { data, error } = useSWR(
     'https://nextjs-course-code-b9589-default-rtdb.asia-southeast1.firebasedatabase.app/sales.json',
     fetcher
   );
-
 
   useEffect(() => {
     if (data) {
@@ -54,7 +54,7 @@ function LastSalesPage(props) {
     return <p>Failed to load.</p>;
   }
 
-  if (!data || !sales) {
+  if (!data && !sales) {
     return <p>Loading...</p>;
   }
 
@@ -69,6 +69,24 @@ function LastSalesPage(props) {
       })}
     </ul>
   );
+}
+
+export async function getStaticProps() {
+  const response = await fetch(
+    'https://nextjs-course-code-b9589-default-rtdb.asia-southeast1.firebasedatabase.app/sales.json'
+  );
+  const data = await response.json();
+  const transformedSales = [];
+
+  for (const key in data) {
+    transformedSales.push({
+      id: key,
+      username: data[key].username,
+      volume: data[key].volume,
+    });
+  }
+
+  return { props: { sales: transformedSales }};
 }
 
 export default LastSalesPage;
